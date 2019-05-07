@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<form id="register_form" action="{% url 'register' %}" method="post">
+	<div class="form-group">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit">
+	</div>
+</form>
+{% endblock %}
+
+{% block javascript %}
+<script>
+ 
+$(function() {
+	$('#register_form').submit(function(event) {
+	    event.preventDefault();
+	    var reg_form = $(this);
+	    var submitButton = $('input[type=submit]', reg_form);
+	    var email = $("#id_email").val();
+		$.ajax({
+	        url: '/validate_user',
+	        data: {
+	          'email': email
+	        },
+	        dataType: 'json',
+	        success: function (data) {
+	          if (data.is_taken) {
+	            alert("This email is already registered.");
+	          }
+	          else{
+			    $('#register_form').unbind('submit');
+			    $('input[type=submit]', reg_form).click();
+			     alert("Registered Succesfully");
+			  }
+		    }
+		});
+	});
+});
+
+</script>
+{% endblock %}
